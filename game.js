@@ -9,19 +9,43 @@ var jumpButton;
 var text;
 var winningMessage;
 var won = false;
+var losingMessage;
+var lose;
+var losingscore;
 var currentScore = 0;
 var winningScore = 100;
 
 // add collectable items to the game
 function addItems() {
   items = game.add.physicsGroup();
-  createItem(375, 300, 'coin');
+  createItem(375, 400, 'coin')
+  createItem(575, 500, 'coin')
+  createItem(225, 500, 'coin')
+  createItem(100, 250, 'coin')
+  createItem(575, 150, 'coin')
+  createItem(525, 300, 'coin')
+  createItem(650, 250, 'coin')
+  createItem(225, 200, 'coin')
+  createItem(135, 375, 'coin')
+  createItem(425, 100, 'coin')
+  createItem(525, 150, 'poison')
+  createItem(370, 320, 'poison')
+  createItem(125, 270, 'poison')
+  createItem(500, 490, 'poison')
+  createItem(350, 550, 'star')
+  createItem(550, 50, 'star');
 }
 
 // add platforms to the game
 function addPlatforms() {
   platforms = game.add.physicsGroup();
-  platforms.create(450, 150, 'platform');
+  platforms.create(450, 550, 'platform');
+  platforms.create(100, 550, 'platform');
+  platforms.create(300, 450, 'platform2');
+  platforms.create(250, 150, 'platform2'); 
+  platforms.create(50, 300, 'platform2');
+  platforms.create(250, 250, 'platform');
+  platforms.create(650, 300, 'platform2');
   platforms.setAll('body.immovable', true);
 }
 
@@ -43,7 +67,17 @@ function createBadge() {
 // when the player collects an item on the screen
 function itemHandler(player, item) {
   item.kill();
-  currentScore = currentScore + 10;
+  console.log(item.key)
+  // add 10 if item is a coin
+  if (item.key === 'coin'){
+    currentScore = currentScore + 10;
+} else if (item.key === 'poison'){
+  currentScore = currentScore - 20;
+} else if (item.key === 'star') {
+  currentScore = currentScore + 20;
+}
+  // add 20 points if the item is a star
+ 
   if (currentScore === winningScore) {
       createBadge();
   }
@@ -65,11 +99,14 @@ window.onload = function () {
     
     //Load images
     game.load.image('platform', 'assets/platform_1.png');
+    game.load.image('platform2', 'assets/platform_2.png');
     
     //Load spritesheets
     game.load.spritesheet('player', 'assets/chalkers.png', 48, 62);
     game.load.spritesheet('coin', 'assets/coin.png', 36, 44);
     game.load.spritesheet('badge', 'assets/badge.png', 42, 54);
+    game.load.spritesheet('poison', 'assets/poison.png', 32, 32);
+    game.load.spritesheet('star', 'assets/star.png', 32, 32);
   }
 
   // initial game set up
@@ -89,6 +126,8 @@ window.onload = function () {
     text = game.add.text(16, 16, "SCORE: " + currentScore, { font: "bold 24px Arial", fill: "white" });
     winningMessage = game.add.text(game.world.centerX, 275, "", { font: "bold 48px Arial", fill: "white" });
     winningMessage.anchor.setTo(0.5, 1);
+    losingMessage = game.add.text(game.world.centerX, 275, "", { font: "bold 48px Arial", fill: "white" });
+    losingMessage.anchor.setTo(0.5, 1);
   }
 
   // while the game is running
@@ -123,6 +162,11 @@ window.onload = function () {
     if (won) {
       winningMessage.text = "YOU WIN!!!";
     }
+    if (currentScore < 0){
+      losingMessage.text = "GAME OVER!!!";
+      player.body.velocity.y = 0;
+      player.body.velocity.x = 0;
+      player.animations.stop();}
   }
 
   function render() {
